@@ -1,69 +1,98 @@
-Code:
 #include<stdio.h>
-#include<conio.h>
 #include<string.h>
-char op[2],arg1[5],arg2[5],result[5];
-void main()
+
+int i=1,j=0,tmpch=90;
+char str[100],left[15],right[15];
+
+void findopr();
+void explore();
+void fleft(int);
+void fright(int);
+
+struct exp
 {
-  FILE *fp1,*fp2;
-  fp1=fopen("input.txt","r");
-  fp2=fopen("output.txt","w");
-  while(!feof(fp1))
+	int pos;
+	char op;
+}k[15];
+
+int main()
+{
+	printf("Enter the Expression: ");
+	scanf("%s",str);
+	printf("The intermediate code:\n");
+	findopr();
+	explore();
+	return 0;
+}
+
+void findopr()
+{
+	for(i=0;str[i]!='\0';i++)
+	{
+		if(str[i]=='/' || str[i]=='*' || str[i]=='+' || str[i]=='-')
+		{
+			k[j].pos=i;
+			k[j++].op=str[i];
+		}
+	}
+}
+
+void explore()
+{
+	i=0;
+	while(i < j)
+	{
+		fleft(k[i].pos);
+		fright(k[i].pos);
+		str[k[i].pos]=tmpch--;
+		printf("\t%c = %s %c %s\n",str[k[i].pos],left,k[i].op,right);
+		i++;
+	}
+	
+	fleft(1);
+	fright(1);
+	printf("\t%s = %s\n", left, right);
+}
+
+void fleft(int x)
+{
+	x--;
+	char temp[20];
+	strcpy(left,"");
+	while(str[x]!= '+' &&str[x]!='-'&&str[x]!='*'&&str[x]!='/'&&str[x]!='='&&str[x]!='\0')
+	{
+		if(str[x]!='$')
+		{
+			strcpy(temp, left);
+			strcpy(left,"");
+			strncat(left, &str[x], 1);
+			strcat(left, temp);
+			str[x]='$';
+		}
+		x--;
+	}
+}
+
+void fright(int x)
+{
+  x++;
+  strcpy(right,"");
+  while(str[x]!= '+'&&str[x]!='-'&&str[x]!='*'&&str[x]!='/'&&str[x]!='\0'&&str[x]!='=')
   {
-
-    fscanf(fp1,"%s%s%s%s",op,arg1,arg2,result);
-    if(strcmp(op,"+")==0)
+    if(str[x]!='$')
     {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nADD R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
+		strncat(right, &str[x], 1);
+      	str[x]='$';
     }
-     if(strcmp(op,"*")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nMUL R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
-    }
-    if(strcmp(op,"-")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nSUB R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
-    }
-       if(strcmp(op,"/")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nDIV R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
-    }
-if(strcmp(op,"=")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nMOV %s,R0",result);
-    }
-    }
-    fclose(fp1);
-    fclose(fp2);
-    getch();
+    x++;
   }
+}
 
+Input:
+Enter the Expression: c=a+b/d
 
-Input.txt:
-+ a b t1
-* c d t2
-- t1 t2 t
-= t ? x
-
-
-Output.txt:
-MOV R0,a
-ADD R0,b
-MOV t1,R0
-MOV R0,c
-MUL R0,d
-MOV t2,R0
-MOV R0,t1
-SUB R0,t2
-MOV t,R0
-MOV R0,t
-MOV x,R0
+Output:
+The intermediate code:
+        Z = a + b
+        Y = Z / d
+        c = Y
