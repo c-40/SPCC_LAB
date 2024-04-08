@@ -1,72 +1,85 @@
-System Programming and Compiler Construction
-Program:
-#include<stdio.h>
-#include<conio.h>
-#include<string.h>
-char op[2],arg1[5],arg2[5],result[5];
-void main()
-{
-  FILE *fp1,*fp2;
-  fp1=fopen("input.txt","r");
-  fp2=fopen("output.txt","w");
-  while(!feof(fp1))
-  {
+#include <stdio.h>
+#include <string.h>
 
-    fscanf(fp1,"%s%s%s%s",op,arg1,arg2,result);
-    if(strcmp(op,"+")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nADD R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
+void generateMachineCode(char op[], char arg1[], char arg2[], char result[]) {
+    if (strcmp(op, "+") == 0) {
+        printf("+ %s %s %s\n", result, arg1, arg2); // Display rearranged expression
+        printf("\nMOV R0,%s", arg1); // Move arg1 to register
+        printf("\nADD R0,%s", arg2); // Add arg2 to register
+        printf("\nMOV %s,R0\n", result); // Move result from register to destination
     }
-     if(strcmp(op,"*")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nMUL R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
+    else if (strcmp(op, "*") == 0) {
+        printf("* %s %s %s\n", result, arg1, arg2); // Display rearranged expression
+        printf("\nMOV R0,%s", arg1); // Move arg1 to register
+        printf("\nMUL R0,%s", arg2); // Multiply arg2 to register
+        printf("\nMOV %s,R0\n", result); // Move result from register to destination
     }
-    if(strcmp(op,"-")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nSUB R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
+    else if (strcmp(op, "-") == 0) {
+        printf("- %s %s %s\n", result, arg1, arg2); // Display rearranged expression
+        printf("\nMOV R0,%s", arg1); // Move arg1 to register
+        printf("\nSUB R0,%s", arg2); // Subtract arg2 from register
+        printf("\nMOV %s,R0\n", result); // Move result from register to destination
     }
-       if(strcmp(op,"/")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nDIV R0,%s",arg2);
-      fprintf(fp2,"\nMOV %s,R0",result);
+    else if (strcmp(op, "/") == 0) {
+        printf("/ %s %s %s\n", result, arg1, arg2); // Display rearranged expression
+        printf("\nMOV R0,%s", arg1); // Move arg1 to register
+        printf("\nDIV R0,%s", arg2); // Divide register by arg2
+        printf("\nMOV %s,R0\n", result); // Move result from register to destination
     }
-if(strcmp(op,"=")==0)
-    {
-      fprintf(fp2,"\nMOV R0,%s",arg1);
-      fprintf(fp2,"\nMOV %s,R0",result);
+    else if (strcmp(op, "=") == 0) {
+        printf("= %s %s\n", result, arg1); // Display rearranged expression
+        printf("\nMOV R0,%s", arg1); // Move arg1 to register
+        printf("\nMOV %s,R0\n", result); // Move result from register to destination
     }
-    }
-    fclose(fp1);
-    fclose(fp2);
-    getch();
-  }
 }
 
-input.txt
+int main() {
+    char op[2], arg1[5], arg2[5], result[5];
+    int num_inputs;
 
-+ a b t1
-* c d t2
-- t1 t2 t
-= t ? x
+    printf("Enter the number of expressions: ");
+    scanf("%d", &num_inputs);
 
-output.txt
+    char expressions[num_inputs][20]; // Assuming each expression is of the form "a = b + c" and is no longer than 20 characters
+    getchar(); // Clear newline character from input buffer
+
+    printf("Enter expressions (in the form: a = c + b):\n");
+    for (int i = 0; i < num_inputs; i++) {
+        fgets(expressions[i], sizeof(expressions[i]), stdin);
+    }
+
+    printf("\n");
+
+    for (int i = 0; i < num_inputs; i++) {
+        sscanf(expressions[i], "%s %s %s %s", result, op, arg1, arg2);
+
+        // Rearranged expression
+        printf("Rearranged expression: ");
+        if (strcmp(op, "+") == 0) {
+            printf("+ %s %s %s\n", result, arg1, arg2);
+        }
+
+        // Generate machine code
+        generateMachineCode(op, arg1, arg2, result);
+    }
+
+    return 0;
+}
+Output:
+Enter the number of expressions: 2
+Enter expressions (in the form: a = c + b):
+a = b + c
+c = d + e
+
+Rearranged expression: = a b
+
+MOV R0,b
+MOV a,R0
+Rearranged expression: = c d
+
+MOV R0,d
+MOV c,R0
 
 
-MOV R0,a
-ADD R0,b
-MOV t1,R0
-MOV R0,c
-MUL R0,d
-MOV t2,R0
-MOV R0,t1
-SUB R0,t2
-MOV t,R0
-MOV R0,t
-MOV x,R0
+...Program finished with exit code 0
+Press ENTER to exit console.
